@@ -3,7 +3,9 @@ from models.models import DocumentChunk, DocumentChunkMetadata, QueryWithEmbeddi
 import pytest
 import redis.asyncio as redis
 import numpy as np
+import logging
 
+logging.basicConfig(level=logging.DEBUG)
 NUM_TEST_DOCS = 10
 
 @pytest.fixture
@@ -32,7 +34,7 @@ def create_document_chunks(n, dim):
 @pytest.mark.asyncio
 async def test_redis_upsert_query(redis_datastore):
     docs = create_document_chunks(NUM_TEST_DOCS, 5)
-    await redis_datastore._upsert(docs)
+    doc_ids = await redis_datastore._upsert(docs)
     query = QueryWithEmbedding(
         query="Lorem ipsum 0",
         top_k=5,
@@ -53,7 +55,6 @@ async def test_redis_filter_query(redis_datastore):
         embedding= create_embedding(0, 5),
     )
     query_results = await redis_datastore._query(queries=[query])
-    print(query_results)
     assert 1 == len(query_results)
     assert "docs" == query_results[0].results[0].id
 

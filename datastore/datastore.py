@@ -36,9 +36,7 @@ class DataStore(ABC):
                 if document.id
             ]
         )
-
         chunks = get_document_chunks(documents, chunk_token_size)
-
         return await self._upsert(chunks)
 
     @abstractmethod

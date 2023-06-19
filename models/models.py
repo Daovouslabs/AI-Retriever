@@ -7,6 +7,14 @@ class Source(str, Enum):
     email = "email"
     file = "file"
     chat = "chat"
+    tool = 'tool'
+
+class ToolType(str, Enum):
+    langchain_tool = "langchain_tool"
+    openai_pulgin = "openai_pulgin"
+    api = "api"
+    langchain_chain = 'langchain_chain'
+    playwright_browser = 'playwright_browser'
 
 
 class DocumentMetadata(BaseModel):
@@ -15,6 +23,8 @@ class DocumentMetadata(BaseModel):
     url: Optional[str] = None
     created_at: Optional[str] = None
     author: Optional[str] = None
+    tool_type: Optional[ToolType] = None
+    api_doc: Optional[str] = None
 
 
 class DocumentChunkMetadata(DocumentMetadata):
@@ -49,7 +59,7 @@ class DocumentMetadataFilter(BaseModel):
     author: Optional[str] = None
     start_date: Optional[str] = None  # any date string format
     end_date: Optional[str] = None  # any date string format
-
+    tool_type: Optional[ToolType] = None
 
 class Query(BaseModel):
     query: str

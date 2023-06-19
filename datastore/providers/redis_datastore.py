@@ -308,7 +308,6 @@ class RedisDataStore(DataStore):
             # Extract Redis query
             redis_query: RediSearchQuery = self._get_redis_query(query)
             embedding = np.array(query.embedding, dtype=np.float64).tobytes()
-
             # Perform vector search
             query_response = await self.client.ft(REDIS_INDEX_NAME).search(
                 redis_query, {"embedding": embedding}

@@ -1,0 +1,32 @@
+# To boot the app run the following:
+# docker-compose run Daovous-AI
+version: '3.9'
+
+services:
+  ai-retriever:
+    depends_on:
+      - redis
+    build:
+      dockerfile: .devcontainer/Dockerfile
+      context: ../
+    env_file:
+      - ../.env
+    tty: true
+    environment:
+      MEMORY_BACKEND: ${MEMORY_BACKEND:-redis}
+      REDIS_HOST: ${REDIS_HOST:-redis}
+    volumes:
+      - ../:/app
+    networks:
+      - daovous-net
+  redis:
+    image: 'redis/redis-stack-server:latest'
+    ports:
+      - 6379:6379
+    networks:
+      - daovous-net
+
+networks:
+  daovous-net:
+    name: daovous-net
+    external: true

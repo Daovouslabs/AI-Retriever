@@ -2,6 +2,7 @@
 # Use the command `poetry run dev` to run this.
 from typing import Optional
 import uvicorn
+from dotenv import load_dotenv
 from fastapi import FastAPI, File, Form, HTTPException, Body, UploadFile
 
 from models.api import (
@@ -19,14 +20,19 @@ from starlette.responses import FileResponse
 
 from models.models import DocumentMetadata, Source
 from fastapi.middleware.cors import CORSMiddleware
-
+import logging
 
 app = FastAPI()
 
 PORT = 3333
 
+logging.basicConfig(level=logging.DEBUG)
+
 origins = [
     f"http://localhost:{PORT}",
+    f"http://172.21.0.4:{PORT}",
+    f"http://172.21.0.3:{PORT}",
+    f"http://172.21.0.2:{PORT}",
     "https://chat.openai.com",
 ]
 
@@ -141,7 +147,9 @@ async def delete(
 async def startup():
     global datastore
     datastore = await get_datastore()
+    load_dotenv(verbose=True, override=True)
 
 
 def start():
-    uvicorn.run("local_server.main:app", host="localhost", port=PORT, reload=True)
+    uvicorn.run("local_server.main:app",
+                host="0.0.0.0", port=PORT, reload=True)
