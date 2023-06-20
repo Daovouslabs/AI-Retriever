@@ -23,8 +23,19 @@ services:
       - 6379:6379
     networks:
       - daovous-net
+    volumes:
+        - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-h", "localhost", "-p", "6379", "ping"]
+      interval: 2s
+      timeout: 1m30s
+      retries: 5
+      start_period: 5s
 
 networks:
   daovous-net:
     name: daovous-net
     external: true
+
+volumes:
+  redis_data:
