@@ -7,7 +7,7 @@ RUN pip3 install -i https://pypi.mirrors.ustc.edu.cn/simple/ --upgrade pip
 
 RUN pip3 config set global.index-url https://pypi.mirrors.ustc.edu.cn/simple/
 
-RUN pip install poetry
+RUN pip install poetry -i https://pypi.mirrors.ustc.edu.cn/simple/
 
 COPY ./pyproject.toml ./poetry.lock* /tmp/
 
@@ -19,7 +19,7 @@ WORKDIR /code
 
 COPY --from=requirements-stage /tmp/requirements.txt /code/requirements.txt
 
-RUN pip install --upgrade pip && pip install --no-cache-dir --upgrade -r /code/requirements.txt
+RUN pip install --upgrade pip && pip install --no-cache-dir --upgrade -r /code/requirements.txt -i https://pypi.mirrors.ustc.edu.cn/simple/
 
 COPY . /code/
 
