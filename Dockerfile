@@ -3,10 +3,6 @@ FROM python:3.10 as requirements-stage
 
 WORKDIR /tmp
 
-RUN pip3 install -i https://pypi.mirrors.ustc.edu.cn/simple/ --upgrade pip
-
-RUN pip3 config set global.index-url https://pypi.mirrors.ustc.edu.cn/simple/
-
 RUN pip install poetry -i https://pypi.mirrors.ustc.edu.cn/simple/
 
 COPY ./pyproject.toml ./poetry.lock* /tmp/
