@@ -16,6 +16,10 @@ WORKDIR /code
 
 COPY --from=requirements-stage /tmp/requirements.txt /code/requirements.txt
 
+RUN pip3 install -i http://mirrors.aliyun.com/pypi/simple/ --upgrade pip
+
+RUN pip3 config set global.index-url http://mirrors.aliyun.com/pypi/simple/
+
 RUN pip install --upgrade pip && pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
 COPY . /code/
