@@ -3,10 +3,13 @@ FROM python:3.10 as requirements-stage
 
 WORKDIR /tmp
 
+RUN pip3 install -i http://mirrors.aliyun.com/pypi/simple/ --upgrade pip
+
+RUN pip3 config set global.index-url http://mirrors.aliyun.com/pypi/simple/
+
 RUN pip install poetry
 
 COPY ./pyproject.toml ./poetry.lock* /tmp/
-
 
 RUN poetry export -f requirements.txt --output requirements.txt --without-hashes
 
@@ -15,10 +18,6 @@ FROM python:3.10
 WORKDIR /code
 
 COPY --from=requirements-stage /tmp/requirements.txt /code/requirements.txt
-
-RUN pip3 install -i http://mirrors.aliyun.com/pypi/simple/ --upgrade pip
-
-RUN pip3 config set global.index-url http://mirrors.aliyun.com/pypi/simple/
 
 RUN pip install --upgrade pip && pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
