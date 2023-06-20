@@ -17,6 +17,8 @@ services:
       - ./:/app
     networks:
       - daovous-net
+    ports:
+      - 8080:8080
   redis:
     image: 'redis/redis-stack-server:latest'
     ports:
@@ -24,7 +26,7 @@ services:
     networks:
       - daovous-net
     volumes:
-        - redis_data:/data
+      - redis_data:/data
     healthcheck:
       test: ["CMD", "redis-cli", "-h", "localhost", "-p", "6379", "ping"]
       interval: 2s
