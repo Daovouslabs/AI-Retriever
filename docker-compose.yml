@@ -18,7 +18,7 @@ services:
     networks:
       - daovous-net
     ports:
-      - 8080:8080
+      - 8090:8090
   redis:
     image: 'redis/redis-stack-server:latest'
     ports:

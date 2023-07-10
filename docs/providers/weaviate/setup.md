@@ -65,7 +65,7 @@ You need to set some environment variables to connect to your Weaviate instance.
 
 | Name             | Required | Description                                                        | Default            |
 |------------------| -------- | ------------------------------------------------------------------ | ------------------ |
-| `WEAVIATE_URL`  | Optional | Your weaviate instance's url/WCS endpoint              | `http://localhost:8080` |           |
+| `WEAVIATE_URL`  | Optional | Your weaviate instance's url/WCS endpoint              | `http://localhost:8090` |           |
 | `WEAVIATE_CLASS` | Optional | Your chosen Weaviate class/collection name to store your documents | OpenAIDocument     |
 
 **Weaviate Auth Environment Variables**
