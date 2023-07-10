@@ -25,7 +25,7 @@ client.headers["Authorization"] = f"Bearer {BEARER_TOKEN}"
 @pytest.fixture
 def weaviate_client():
     host = os.getenv("WEAVIATE_HOST", "http://localhost")
-    port = os.getenv("WEAVIATE_PORT", "8080")
+    port = os.getenv("WEAVIATE_PORT", "8090")
     client = Client(f"{host}:{port}")
 
     yield client
