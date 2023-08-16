@@ -37,6 +37,7 @@ This README provides detailed information on how to set up, develop, and deploy 
     - [General Environment Variables](#general-environment-variables)
   - [Choosing a Vector Database](#choosing-a-vector-database)
     - [Pinecone](#pinecone)
+    - [Elasticsearch](#elasticsearch)
     - [Weaviate](#weaviate)
     - [Zilliz](#zilliz)
     - [Milvus](#milvus)
@@ -47,6 +48,7 @@ This README provides detailed information on how to set up, develop, and deploy 
     - [Azure Cognitive Search](#azure-cognitive-search)
     - [Supabase](#supabase)
     - [Postgres](#postgres)
+    - [AnalyticDB](#analyticdb)
   - [Running the API Locally](#running-the-api-locally)
   - [Testing a Localhost Plugin in ChatGPT](#testing-a-localhost-plugin-in-chatgpt)
   - [Personalization](#personalization)
@@ -119,6 +121,15 @@ Follow these steps to quickly set up and run the ChatGPT Retrieval Plugin:
    export QDRANT_API_KEY=<your_qdrant_api_key>
    export QDRANT_COLLECTION=<your_qdrant_collection>
 
+   # AnalyticDB
+   export PG_HOST=<your_analyticdb_host>
+   export PG_PORT=<your_analyticdb_port>
+   export PG_USER=<your_analyticdb_username>
+   export PG_PASSWORD=<your_analyticdb_password>
+   export PG_DATABASE=<your_analyticdb_database>
+   export PG_COLLECTION=<your_analyticdb_collection>
+
+
    # Redis
    export REDIS_HOST=<your_redis_host>
    export REDIS_PORT=<your_redis_port>
@@ -156,6 +167,18 @@ Follow these steps to quickly set up and run the ChatGPT Retrieval Plugin:
    export PG_USER=<postgres_user>
    export PG_PASSWORD=<postgres_password>
    export PG_DATABASE=<postgres_database>
+
+   # Elasticsearch
+   export ELASTICSEARCH_URL=<elasticsearch_host_and_port> (either specify host or cloud_id)
+   export ELASTICSEARCH_CLOUD_ID=<elasticsearch_cloud_id>
+
+   export ELASTICSEARCH_USERNAME=<elasticsearch_username>
+   export ELASTICSEARCH_PASSWORD=<elasticsearch_password>
+   export ELASTICSEARCH_API_KEY=<elasticsearch_api_key>
+
+   export ELASTICSEARCH_INDEX=<elasticsearch_index_name>
+   export ELASTICSEARCH_REPLICAS=<elasticsearch_replicas>
+   export ELASTICSEARCH_SHARDS=<elasticsearch_shards>
    ```
 
 10. Run the API locally: `poetry run start`
@@ -267,11 +290,11 @@ poetry install
 
 The API requires the following environment variables to work:
 
-| Name             | Required | Description                                                                                                                                                                                                                    |
-| ---------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `DATASTORE`      | Yes      | This specifies the vector database provider you want to use to store and query embeddings. You can choose from `chroma`, `pinecone`, `weaviate`, `zilliz`, `milvus`, `qdrant`, `redis`, `azuresearch`, `supabase`, `postgres`. |
-| `BEARER_TOKEN`   | Yes      | This is a secret token that you need to authenticate your requests to the API. You can generate one using any tool or method you prefer, such as [jwt.io](https://jwt.io/).                                                    |
-| `OPENAI_API_KEY` | Yes      | This is your OpenAI API key that you need to generate embeddings using the `text-embedding-ada-002` model. You can get an API key by creating an account on [OpenAI](https://openai.com/).                                     |
+| Name             | Required | Description                                                                                                                                                                                                                                                   |
+| ---------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `DATASTORE`      | Yes      | This specifies the vector database provider you want to use to store and query embeddings. You can choose from `elasticsearch`, `chroma`, `pinecone`, `weaviate`, `zilliz`, `milvus`, `qdrant`, `redis`, `azuresearch`, `supabase`, `postgres`, `analyticdb`. |
+| `BEARER_TOKEN`   | Yes      | This is a secret token that you need to authenticate your requests to the API. You can generate one using any tool or method you prefer, such as [jwt.io](https://jwt.io/).                                                                                   |
+| `OPENAI_API_KEY` | Yes      | This is your OpenAI API key that you need to generate embeddings using the `text-embedding-ada-002` model. You can get an API key by creating an account on [OpenAI](https://openai.com/).                                                                    |
 
 ### Using the plugin with Azure OpenAI
 
@@ -337,6 +360,14 @@ For detailed setup instructions, refer to [`/docs/providers/llama/setup.md`](/do
 #### Postgres
 
 [Postgres](https://www.postgresql.org) offers an easy and efficient way to store vectors via [pgvector](https://github.com/pgvector/pgvector) extension. To use pgvector, you will need to set up a PostgreSQL database with the pgvector extension enabled. For example, you can [use docker](https://www.docker.com/blog/how-to-use-the-postgres-docker-official-image/) to run locally. For a hosted/managed solution, you can use any of the cloud vendors which support [pgvector](https://github.com/pgvector/pgvector#hosted-postgres). For detailed setup instructions, refer to [`/docs/providers/postgres/setup.md`](/docs/providers/postgres/setup.md).
+
+#### AnalyticDB
+
+[AnalyticDB](https://www.alibabacloud.com/help/en/analyticdb-for-postgresql/latest/product-introduction-overview) is a distributed cloud-native vector database designed for storing documents and vector embeddings. It is fully compatible with PostgreSQL syntax and managed by Alibaba Cloud. AnalyticDB offers a powerful vector compute engine, processing billions of data vectors and providing features such as indexing algorithms, structured and unstructured data capabilities, real-time updates, distance metrics, scalar filtering, and time travel searches. For detailed setup instructions, refer to [`/docs/providers/analyticdb/setup.md`](/docs/providers/analyticdb/setup.md).
+
+#### Elasticsearch
+
+[Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html) currently supports storing vectors through the `dense_vector` field type and uses them to calculate document scores. Elasticsearch 8.0 builds on this functionality to support fast, approximate nearest neighbor search (ANN). This represents a much more scalable approach, allowing vector search to run efficiently on large datasets. For detailed setup instructions, refer to [`/docs/providers/elasticsearch/setup.md`](/docs/providers/elasticsearch/setup.md).
 
 ### Running the API locally
 
@@ -474,11 +505,53 @@ The scripts are:
 - [`process_jsonl`](scripts/process_jsonl/): This script processes a file dump of documents in a JSONL format and stores them in the vector database with some metadata. The format of the JSONL file should be a newline-delimited JSON file, where each line is a valid JSON object representing a document. The JSON object should have a `text` field and optionally other fields to populate the metadata. You can provide custom metadata as a JSON string and flags to screen for PII and extract metadata.
 - [`process_zip`](scripts/process_zip/): This script processes a file dump of documents in a zip file and stores them in the vector database with some metadata. The format of the zip file should be a flat zip file folder of docx, pdf, txt, md, pptx or csv files. You can provide custom metadata as a JSON string and flags to screen for PII and extract metadata.
 
+## Pull Request (PR) Checklist
+
+If you'd like to contribute, please follow the checklist below when submitting a PR. This will help us review and merge your changes faster! Thank you for contributing!
+
+1. **Type of PR**: Indicate the type of PR by adding a label in square brackets at the beginning of the title, such as `[Bugfix]`, `[Feature]`, `[Enhancement]`, `[Refactor]`, or `[Documentation]`.
+
+2. **Short Description**: Provide a brief, informative description of the PR that explains the changes made.
+
+3. **Issue(s) Linked**: Mention any related issue(s) by using the keyword `Fixes` or `Closes` followed by the respective issue number(s) (e.g., Fixes #123, Closes #456).
+
+4. **Branch**: Ensure that you have created a new branch for the changes, and it is based on the latest version of the `main` branch.
+
+5. **Code Changes**: Make sure the code changes are minimal, focused, and relevant to the issue or feature being addressed.
+
+6. **Commit Messages**: Write clear and concise commit messages that explain the purpose of each commit.
+
+7. **Tests**: Include unit tests and/or integration tests for any new code or changes to existing code. Make sure all tests pass before submitting the PR.
+
+8. **Documentation**: Update relevant documentation (e.g., README, inline comments, or external documentation) to reflect any changes made.
+
+9. **Review Requested**: Request a review from at least one other contributor or maintainer of the repository.
+
+10. **Video Submission** (For Complex/Large PRs): If your PR introduces significant changes, complexities, or a large number of lines of code, submit a brief video walkthrough along with the PR. The video should explain the purpose of the changes, the logic behind them, and how they address the issue or add the proposed feature. This will help reviewers to better understand your contribution and expedite the review process.
+
+## Pull Request Naming Convention
+
+Use the following naming convention for your PR branches:
+
+```
+<type>/<short-description>-<issue-number>
+```
+
+- `<type>`: The type of PR, such as `bugfix`, `feature`, `enhancement`, `refactor`, or `docs`. Multiple types are ok and should appear as <type>, <type2>
+- `<short-description>`: A brief description of the changes made, using hyphens to separate words.
+- `<issue-number>`: The issue number associated with the changes made (if applicable).
+
+Example:
+
+```
+feature/advanced-chunking-strategy-123
+```
+
 ## Limitations
 
 While the ChatGPT Retrieval Plugin is designed to provide a flexible solution for semantic search and retrieval, it does have some limitations:
 
-- **Keyword search limitations**: The embeddings generated by the `text-embedding-ada-002` model may not always be effective at capturing exact keyword matches. As a result, the plugin might not return the most relevant results for queries that rely heavily on specific keywords. Some vector databases, like Pinecone, Weaviate and Azure Cognitive Search, use hybrid search and might perform better for keyword searches.
+- **Keyword search limitations**: The embeddings generated by the `text-embedding-ada-002` model may not always be effective at capturing exact keyword matches. As a result, the plugin might not return the most relevant results for queries that rely heavily on specific keywords. Some vector databases, like Elasticsearch, Pinecone, Weaviate and Azure Cognitive Search, use hybrid search and might perform better for keyword searches.
 - **Sensitive data handling**: The plugin does not automatically detect or filter sensitive data. It is the responsibility of the developers to ensure that they have the necessary authorization to include content in the Retrieval Plugin and that the content complies with data privacy requirements.
 - **Scalability**: The performance of the plugin may vary depending on the chosen vector database provider and the size of the dataset. Some providers may offer better scalability and performance than others.
 - **Language support**: The plugin currently uses OpenAI's `text-embedding-ada-002` model, which is optimized for use in English. However, it is still robust enough to generate good results for a variety of languages.
@@ -530,3 +603,5 @@ We would like to extend our gratitude to the following contributors for their co
 - [Postgres](https://www.postgresql.org/)
   - [egor-romanov](https://github.com/egor-romanov)
   - [mmmaia](https://github.com/mmmaia)
+- [Elasticsearch](https://www.elastic.co/)
+  - [joemcelroy](https://github.com/joemcelroy)

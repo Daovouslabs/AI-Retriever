@@ -4,6 +4,7 @@ from typing import Optional
 import uvicorn
 from dotenv import load_dotenv
 from fastapi import FastAPI, File, Form, HTTPException, Body, UploadFile
+from loguru import logger
 
 from models.api import (
     DeleteRequest,
@@ -88,7 +89,7 @@ async def upsert_file(
         ids = await datastore.upsert([document])
         return UpsertResponse(ids=ids)
     except Exception as e:
-        print("Error:", e)
+        logger.error(e)
         raise HTTPException(status_code=500, detail=f"str({e})")
 
 
@@ -103,7 +104,7 @@ async def upsert(
         ids = await datastore.upsert(request.documents)
         return UpsertResponse(ids=ids)
     except Exception as e:
-        print("Error:", e)
+        logger.error(e)
         raise HTTPException(status_code=500, detail="Internal Service Error")
 
 
@@ -115,7 +116,7 @@ async def query_main(request: QueryRequest = Body(...)):
         )
         return QueryResponse(results=results)
     except Exception as e:
-        print("Error:", e)
+        logger.error(e)
         raise HTTPException(status_code=500, detail="Internal Service Error")
 
 
@@ -139,7 +140,7 @@ async def delete(
         )
         return DeleteResponse(success=success)
     except Exception as e:
-        print("Error:", e)
+        logger.error(e)
         raise HTTPException(status_code=500, detail="Internal Service Error")
 
 
