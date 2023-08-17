@@ -147,8 +147,11 @@ async def delete(
 @app.on_event("startup")
 async def startup():
     global datastore
-    datastore = await get_datastore()
     load_dotenv(verbose=True, override=True)
+    from services.models import Models
+    Models.load()
+    dim = Models.embedder.get_sentence_embedding_dimension()
+    datastore = await get_datastore(dim)
 
 
 def start():

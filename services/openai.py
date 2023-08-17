@@ -4,14 +4,7 @@ import os
 from loguru import logger
 
 from tenacity import retry, wait_random_exponential, stop_after_attempt
-from sentence_transformers import SentenceTransformer, util
-
-model_path = os.environ.get("EMBEDDING_MODEL_PATH")
-embedder = None
-if model_path:
-    # load model
-    logger.info(f"Load embedding model from {model_path}")
-    embedder = SentenceTransformer(model_path)
+from services.models import Models
 
 @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(3))
 def get_embeddings(texts: List[str]) -> List[List[float]]:
@@ -27,8 +20,11 @@ def get_embeddings(texts: List[str]) -> List[List[float]]:
     Raises:
         Exception: If the OpenAI API call fails.
     """
-    if embedder:
-        return embedder.encode(texts).tolist()
+
+    print(f"###{Models.embedder}")
+    if Models.embedder:
+        embeddings = Models.embedder.encode(texts).tolist()
+        return embeddings
 
     # Call the OpenAI API to get the embeddings
     # NOTE: Azure Open AI requires deployment id

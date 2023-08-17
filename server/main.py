@@ -5,7 +5,7 @@ from fastapi import FastAPI, File, Form, HTTPException, Depends, Body, UploadFil
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.staticfiles import StaticFiles
 from loguru import logger
-
+from dotenv import load_dotenv
 from models.api import (
     DeleteRequest,
     DeleteResponse,
@@ -151,7 +151,11 @@ async def delete(
 @app.on_event("startup")
 async def startup():
     global datastore
-    datastore = await get_datastore()
+    load_dotenv(verbose=True, override=True)
+    from services.models import Models
+    Models.load()
+    dim = Models.embedder.get_sentence_embedding_dimension()
+    datastore = await get_datastore(dim)
 
 
 def start():

@@ -2,7 +2,7 @@ from datastore.datastore import DataStore
 import os
 
 
-async def get_datastore() -> DataStore:
+async def get_datastore(dim=1536) -> DataStore:
     datastore = os.environ.get("DATASTORE")
     assert datastore is not None
 
@@ -35,7 +35,7 @@ async def get_datastore() -> DataStore:
         case "redis":
             from datastore.providers.redis_datastore import RedisDataStore
 
-            return await RedisDataStore.init()
+            return await RedisDataStore.init(dim=dim)
         case "qdrant":
             from datastore.providers.qdrant_datastore import QdrantDataStore
 
