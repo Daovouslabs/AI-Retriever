@@ -25,6 +25,8 @@ class DocumentMetadata(BaseModel):
     author: Optional[str] = None
     tool_type: Optional[ToolType] = None
     api_doc: Optional[str] = None
+    name: Optional[str] = None
+    description: Optional[str] = None
 
 
 class DocumentChunkMetadata(DocumentMetadata):
