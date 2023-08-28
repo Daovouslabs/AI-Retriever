@@ -21,6 +21,7 @@ def get_embeddings(texts: List[str]) -> List[List[float]]:
         Exception: If the OpenAI API call fails.
     """
     if Models.embedder:
+        print('### using custom embedder')
         embeddings = Models.embedder.encode(texts).tolist()
         return embeddings
 
