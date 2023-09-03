@@ -27,6 +27,7 @@ class DocumentMetadata(BaseModel):
     api_doc: Optional[str] = None
     name: Optional[str] = None
     description: Optional[str] = None
+    metadata: Optional[dict] = None
 
 
 class DocumentChunkMetadata(DocumentMetadata):
