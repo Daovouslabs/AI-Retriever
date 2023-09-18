@@ -63,6 +63,7 @@ class DocumentMetadataFilter(BaseModel):
     start_date: Optional[str] = None  # any date string format
     end_date: Optional[str] = None  # any date string format
     tool_type: Optional[ToolType] = None
+    max_score: Optional[float] = 0.5
 
 class Query(BaseModel):
     query: str

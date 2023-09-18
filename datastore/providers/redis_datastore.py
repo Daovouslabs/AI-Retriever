@@ -244,7 +244,6 @@ class RedisDataStore(DataStore):
         query_str = (
             f"({filter_str})=>[KNN {query.top_k} @embedding $embedding as score]"
         )
-        print(query_str)
         return (
             RediSearchQuery(query_str)
             .sort_by("score")
@@ -319,13 +318,14 @@ class RedisDataStore(DataStore):
                 # Load JSON data
                 doc_json = json.loads(doc.json)
                 # Create document chunk object with score
-                result = DocumentChunkWithScore(
-                    id=doc_json["metadata"]["document_id"],
-                    score=doc.score,
-                    text=doc_json["text"],
-                    metadata=doc_json["metadata"]
-                )
-                query_results.append(result)
+                if float(doc.score) <= query.filter.max_score:
+                    result = DocumentChunkWithScore(
+                        id=doc_json["metadata"]["document_id"],
+                        score=doc.score,
+                        text=doc_json["text"],
+                        metadata=doc_json["metadata"]
+                    )
+                    query_results.append(result)
 
             # Add to overall results
             results.append(QueryResult(query=query.query, results=query_results))
