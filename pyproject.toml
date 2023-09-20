@@ -28,7 +28,6 @@ arrow = "^1.2.3"
 redis = "4.5.4"
 loguru = "^0.7.0"
 elasticsearch = "8.8.2"
-sentence-transformers = "^2.2.2"
 
 [tool.poetry.scripts]
 start = "server.main:start"
